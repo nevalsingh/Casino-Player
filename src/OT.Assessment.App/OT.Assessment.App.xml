@@ -4,5 +4,42 @@
         <name>OT.Assessment.App</name>
     </assembly>
     <members>
+        <member name="T:OT.Assessment.App.Contracts.CasinoWagerHistoryItem">
+            <summary>One row of a player's wager history.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Contracts.CasinoWagerHistoryItem.#ctor(System.Guid,System.String,System.String,System.Decimal,System.DateTime)">
+            <summary>One row of a player's wager history.</summary>
+        </member>
+        <member name="T:OT.Assessment.App.Contracts.CasinoWagerHistoryResponse">
+            <summary>Paginated response for the player casino history endpoint.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Contracts.CasinoWagerHistoryResponse.#ctor(System.Collections.Generic.IReadOnlyList{OT.Assessment.App.Contracts.CasinoWagerHistoryItem},System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Paginated response for the player casino history endpoint.</summary>
+        </member>
+        <member name="T:OT.Assessment.App.Contracts.TopSpenderResponse">
+            <summary>One row of the top-spenders leaderboard.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Contracts.TopSpenderResponse.#ctor(System.Guid,System.String,System.Decimal)">
+            <summary>One row of the top-spenders leaderboard.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Controllers.PlayerController.CasinoWager(OT.Assessment.App.Contracts.CasinoWagerRequest,System.Threading.CancellationToken)">
+            <summary>Queues a casino wager for processing.</summary>
+            <remarks>Returns 200 once the message broker has durably accepted the wager.</remarks>
+        </member>
+        <member name="M:OT.Assessment.App.Controllers.PlayerController.GetCasinoHistory(System.Guid,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Returns a page of a player's casino wager history, newest first.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Controllers.PlayerController.GetTopSpenders(System.Int32,System.Threading.CancellationToken)">
+            <summary>Returns the top spending players, highest total spend first.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Services.IPlayerService.PublishWagerAsync(OT.Assessment.App.Contracts.CasinoWagerRequest,System.Threading.CancellationToken)">
+            <summary>Returns true once the broker has confirmed the wager; false if it could not be queued.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Services.IPlayerService.GetCasinoHistoryAsync(System.Guid,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Returns a page of a player's wagers, newest first.</summary>
+        </member>
+        <member name="M:OT.Assessment.App.Services.IPlayerService.GetTopSpendersAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Returns the top <paramref name="count"/> players by total spend, highest first.</summary>
+        </member>
     </members>
 </doc>

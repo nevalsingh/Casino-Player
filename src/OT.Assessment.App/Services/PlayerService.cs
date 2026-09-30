@@ -1,11 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
 using OT.Assessment.App.Contracts;
 using OT.Assessment.Core.Interfaces;
 using OT.Assessment.Core.Messaging;
 
 namespace OT.Assessment.App.Services;
 
-public sealed class PlayerService (ILogger<PlayerService> logger, ICasinoWagerPublisher publisher) : IPlayerService
+public sealed class PlayerService(
+    ILogger<PlayerService> logger,
+    ICasinoWagerPublisher publisher,
+    IPlayerWagerReadRepository readRepository) : IPlayerService
 {
     public async Task<bool> PublishWagerAsync(CasinoWagerRequest request, CancellationToken cancellationToken)
     {
@@ -33,10 +35,28 @@ public sealed class PlayerService (ILogger<PlayerService> logger, ICasinoWagerPu
             await publisher.PublishAsync(wagerEvent, cancellationToken);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             logger.LogError(ex, "Failed to publish wager {WagerId} to the broker", wagerEvent.WagerId);
             return false;
         }
+    }
+
+    public async Task<CasinoWagerHistoryResponse> GetCasinoHistoryAsync(Guid playerId, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        var result = await readRepository.GetWagerPageAsync(playerId, page, pageSize, cancellationToken);
+
+        return new CasinoWagerHistoryResponse(
+            result.Data.Select(w => new CasinoWagerHistoryItem(w.WagerId, w.Game, w.Provider, w.Amount, w.CreatedDate)).ToList(),
+            result.Page,
+            result.PageSize,
+            result.Total,
+            result.TotalPages);
+    }
+
+    public async Task<IReadOnlyList<TopSpenderResponse>> GetTopSpendersAsync(int count, CancellationToken cancellationToken)
+    {
+        var topSpenders = await readRepository.GetTopSpendersAsync(count, cancellationToken);
+        return topSpenders.Select(s => new TopSpenderResponse(s.AccountId, s.Username, s.TotalAmountSpend)).ToList();
     }
 }
