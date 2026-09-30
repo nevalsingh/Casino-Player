@@ -10,7 +10,7 @@ namespace OT.Assessment.App.Controllers
     public sealed class PlayerController(ILogger<PlayerController> logger, IPlayerService playerService) : ControllerBase
     {
         //POST api/player/casinowager
-        [HttpPost("casiowager")]
+        [HttpPost("casinowager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]

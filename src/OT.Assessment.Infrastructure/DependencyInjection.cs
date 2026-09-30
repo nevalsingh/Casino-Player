@@ -20,6 +20,12 @@ public static class DependencyInjection
         return services;
     }
     
+    public static IServiceCollection AddRabbitMqConsumer(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddRabbitMqCore(configuration);
+        return services;
+    }
+    
     private static void AddRabbitMqCore(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<RabbitMqOptions>()

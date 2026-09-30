@@ -29,6 +29,17 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "https (docker)": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7120;http://localhost:5021",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__DatabaseConnection": "Server=localhost,1433;Database=OT_Assessment_DB;User Id=sa;Password=Password1!;TrustServerCertificate=True;"
+      }
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
