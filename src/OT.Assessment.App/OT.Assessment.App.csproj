@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\OT.Assessment.Infrastructure\OT.Assessment.Infrastructure.csproj" />
+	  <ProjectReference Include="..\OT.Assessment.Infrastructure\OT.Assessment.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

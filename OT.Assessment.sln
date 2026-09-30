@@ -19,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6FA7DAF4-446
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tester", "tester", "{B4795B8C-CE52-404F-AA64-6D8AA8734A96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OT.Assessment.Core", "OT.Assessment.Core\OT.Assessment.Core.csproj", "{98A1807B-7991-4CB9-AC2F-D0B332377DF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OT.Assessment.Core", "src\OT.Assessment.Core\OT.Assessment.Core.csproj", "{98A1807B-7991-4CB9-AC2F-D0B332377DF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OT.Assessment.Infrastructure", "OT.Assessment.Infrastructure\OT.Assessment.Infrastructure.csproj", "{356CFBF8-9EE1-435F-BA04-5E5E3A1A02C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OT.Assessment.Infrastructure", "src\OT.Assessment.Infrastructure\OT.Assessment.Infrastructure.csproj", "{356CFBF8-9EE1-435F-BA04-5E5E3A1A02C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
