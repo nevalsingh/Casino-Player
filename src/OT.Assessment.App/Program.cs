@@ -1,4 +1,5 @@
 using System.Reflection;
+using OT.Assessment.App.Services;
 using OT.Assessment.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddRabbitMqPublisher(builder.Configuration);
 //builder.Services.AddSqlServerReadRepositories(builder.Configuration);
 //builder.Services.AddRedisReadCache(builder.Configuration);
+
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 var app = builder.Build();
 

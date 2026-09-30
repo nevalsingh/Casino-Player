@@ -4,6 +4,7 @@ using OT.Assessment.Core.Interfaces;
 using OT.Assessment.Core.Options;
 using OT.Assessment.Infrastructure.HealthChecks;
 using OT.Assessment.Infrastructure.RabbitMq;
+using OT.Assessment.Infrastructure.Sql;
 
 namespace OT.Assessment.Infrastructure;
 
@@ -28,4 +29,14 @@ public static class DependencyInjection
         services.AddSingleton<RabbitMqConnectionProvider>();
         services.AddHostedService<RabbitMqTopologyInitializer>();
     }
+    
+    public static IServiceCollection AddSqlServerBatchWriter(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<ICasinoWagerBatchWriter>(new CasinoWagerBatchWriter(GetConnectionString(configuration)));
+        return services;
+    }
+    
+    private static string GetConnectionString(IConfiguration configuration) =>
+        configuration.GetConnectionString("DatabaseConnection")
+        ?? throw new InvalidOperationException("Missing required configuration 'ConnectionStrings:DatabaseConnection'.");
 }
