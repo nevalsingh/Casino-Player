@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+		<PackageReference Include="xunit" Version="2.9.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+		<PackageReference Include="NSubstitute" Version="5.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\OT.Assessment.App\OT.Assessment.App.csproj" />
+		<ProjectReference Include="..\..\src\OT.Assessment.Consumer\OT.Assessment.Consumer.csproj" />
+		<ProjectReference Include="..\..\src\OT.Assessment.Core\OT.Assessment.Core.csproj" />
+		<ProjectReference Include="..\..\src\OT.Assessment.Infrastructure\OT.Assessment.Infrastructure.csproj" />
+	</ItemGroup>
+
+</Project>
