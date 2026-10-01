@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddProblemDetails();
 builder.Services.AddRabbitMqPublisher(builder.Configuration);
 builder.Services.AddSqlServerReadRepositories(builder.Configuration);
-//builder.Services.AddRedisReadCache(builder.Configuration);
+builder.Services.AddRedisReadCache(builder.Configuration);
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 
