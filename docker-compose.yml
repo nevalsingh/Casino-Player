@@ -1,0 +1,114 @@
+name: ot-assessment
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ot-assessment-sql
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Password1!}"
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: ot-assessment-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ot-assessment-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Creates the database, then exits.
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ot-assessment-db-init
+    restart: "no"
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Password1!}"
+    volumes:
+      - ./DatabaseGenerate.sql:/DatabaseGenerate.sql:ro
+    entrypoint: ["/bin/bash", "-c", "/opt/mssql-tools18/bin/sqlcmd -C -S sql-server -U sa -P \"$$MSSQL_SA_PASSWORD\" -b -i /DatabaseGenerate.sql"]
+
+  app:
+    build:
+      context: .
+      dockerfile: src/OT.Assessment.App/Dockerfile
+    container_name: ot-assessment-app
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "7120:7120"
+      - "5021:5021"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "https://+:7120;http://+:5021"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/ot-assessment.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "${CERT_PASSWORD:-ot-dev-cert}"
+      # Avoids intermittent TLS handshake failures from Windows clients (see Notes.md).
+      DOTNET_SYSTEM_NET_SECURITY_DISABLETLSRESUME: "true"
+      ConnectionStrings__DatabaseConnection: "Server=sql-server;Database=OT_Assessment_DB;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Password1!};TrustServerCertificate=True;"
+      RabbitMq__HostName: rabbitmq
+      Redis__HostName: redis
+    volumes:
+      - ${CERT_DIR:-${USERPROFILE}/.aspnet/https}:/https:ro
+    healthcheck:
+      # No curl in the aspnet image. 307 is the http to https redirect.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/5021 && printf 'GET /health HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 && head -n1 <&3 | grep -qE ' (200|307) '"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  consumer:
+    build:
+      context: .
+      dockerfile: src/OT.Assessment.Consumer/Dockerfile
+    container_name: ot-assessment-consumer
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DatabaseConnection: "Server=sql-server;Database=OT_Assessment_DB;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Password1!};TrustServerCertificate=True;"
+      RabbitMq__HostName: rabbitmq
+    restart: unless-stopped
+
+volumes:
+  sql-data:
+  rabbitmq-data:
+  redis-data:
